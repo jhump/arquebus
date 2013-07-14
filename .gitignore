@@ -1,0 +1,11 @@
+.idea/
+target/
+.classpath
+.project
+.settings
+eclipsebin
+*.iml
+*.ipr
+*.iws
+.DS_Store
+JBox2d.log
