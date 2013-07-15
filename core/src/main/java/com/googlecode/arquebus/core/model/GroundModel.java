@@ -32,7 +32,7 @@ public class GroundModel {
   private static final int MAX_RUN_LENGTH = 30;
   private static final int MIN_RUN_LENGTH = 3;
   
-  private static final double MAX_GROUND_SLOPE = 0.6;
+  private static final float MAX_GROUND_SLOPE = 0.6f;
 
   // these can be re-used, so no need to allocate extra unnecessary objects
   private static final EdgeShape EDGE = new EdgeShape();

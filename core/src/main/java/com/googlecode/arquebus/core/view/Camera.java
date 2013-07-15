@@ -4,7 +4,7 @@ import pythagoras.f.Point;
 
 
 public class Camera {
-  private static final int VIEWPORT_HEIGHT = 16;
+  private static final int VIEWPORT_HEIGHT = 30;
   
   private final int width;
   private final int height;

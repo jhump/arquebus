@@ -186,8 +186,6 @@ public class VehicleModel {
   }
   
   public void reset() {
-    System.out.println("reset");
-    
     float carX = car.getWorldCenter().x;
     Vec2 v = new Vec2(carX, INITIAL_CAR_POS.y);
     car.setTransform(v, 0);
@@ -214,7 +212,6 @@ public class VehicleModel {
         && Math.abs(car.getLinearVelocity().x) < 0.0001f
         && Math.abs(car.getLinearVelocity().y) < 0.0001f) {
       if (ticksWhenVehicleStuck == 0) {
-        System.out.println("vehicle stuck");
         ticksWhenVehicleStuck = PlayN.tick();
       } else if (ticksWhenVehicleStuck + TICKS_UNTIL_AUTORESET <= PlayN.tick()) {
         // reset car
@@ -222,27 +219,23 @@ public class VehicleModel {
       }
     } else if (ticksWhenVehicleStuck != 0) {
       // vehicle unstuck itself w/out reset
-      System.out.println("vehicle unstuck itself!");
       ticksWhenVehicleStuck = 0;
     }
 
     // when car comes to nearly complete stop, done braking
     if (brake != 0 && Math.abs(car.getLinearVelocity().x) < 0.1f
         && Math.abs(car.getLinearVelocity().y) < 0.1f) {
-      System.out.println("done braking");
       brake = 0;
       applyThrottle();
     }
   }
   
   public void setThrottle(float throttle) {
-    System.out.println("set throttle " + throttle);
     this.throttle = throttle;
     
     if (throttle != 0 && Math.signum(throttle) != Math.signum(car.getLinearVelocity().x)) {
       this.brake = Math.abs(throttle);
       applyBrake();
-      System.out.println("applying brakes");
     } else {
       this.brake = 0;
       applyThrottle();

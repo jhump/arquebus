@@ -8,7 +8,7 @@ import playn.core.Path;
 import pythagoras.f.Point;
 
 
-public class GroundView extends CanvasRenderable {
+public class GroundView implements Renderable<Canvas> {
   private final GroundModel ground;
   
   GroundView(GroundModel ground) {
@@ -16,8 +16,12 @@ public class GroundView extends CanvasRenderable {
   }
 
   @Override
+  public int getZindex() {
+    return -1000;
+  }
+  
+  @Override
   public void render(Canvas canvas, Camera camera) {
-    canvas.clear();
     Path path = canvas.createPath();
     Point p0 = camera.worldToView(camera.getMaxX(), camera.getMinY());
     Point p1 = camera.worldToView(camera.getMinX(), camera.getMinY());
