@@ -22,7 +22,7 @@ public class ArquebusMain extends Game.Default {
   private FrameRateTracker fps;
   private FrameRateTracker fpsMinute;
   private GameModel model;
-  private GameView renderer;
+  private GameView view;
   private Canvas statsCanvas;
       
   public ArquebusMain() {
@@ -36,8 +36,8 @@ public class ArquebusMain extends Game.Default {
       @Override
       public void onSuccess(Level result) {
         model = new GameModel(result);
-        renderer = new GameView(model, result, graphics());
-        new VehicleController(model.getVehicle());
+        view = new GameView(model, result, graphics());
+        new VehicleController(model.getVehicle(), view);
       }
 
       @Override
@@ -65,32 +65,34 @@ public class ArquebusMain extends Game.Default {
 
   @Override
   public void update(int delta) {
-    if (model == null || renderer == null) {
+    if (model == null || view == null) {
       return;
     }
     model.update(delta);
+    model.getVehicle().setAimingAt(view.getPointerWorldPosition());
   }
   
   private void drawStats() {
     if (statsCanvas == null) {
       statsCanvas = Layers.addCanvas(graphics());
-      statsCanvas.setFillColor(Color.rgb(255, 255, 255)).setStrokeColor(Color.rgb(0, 0, 0)).setStrokeWidth(1);
+      statsCanvas.setFillColor(Color.rgb(255, 255, 255))
+          .setStrokeColor(Color.rgb(0, 0, 0)).setStrokeWidth(1);
     }
     statsCanvas.clear();
     Font font = graphics().createFont("Arial", Style.PLAIN, 12);
-    TextLayout layout = graphics().layoutText(
-        String.format("Frame Rate: %4.2f (%4.2f over last minute)", fps.fpsRate(), fpsMinute.fpsRate()),
-        new TextFormat().withFont(font));
+    String msg = String.format("Frame Rate: %4.2f (%4.2f over last minute)",
+        fps.fpsRate(), fpsMinute.fpsRate());
+    TextLayout layout = graphics().layoutText(msg, new TextFormat().withFont(font));
     statsCanvas.strokeText(layout, 0, 0).fillText(layout, 0, 0);
   }
   
 
   @Override
   public void paint(float alpha) {
-    if (model == null || renderer == null) {
+    if (model == null || view == null) {
       return;
     }
-    renderer.paint();
+    view.paint();
     fps.mark(); fpsMinute.mark();
     drawStats();
   }

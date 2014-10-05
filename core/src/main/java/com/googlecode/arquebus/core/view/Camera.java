@@ -59,6 +59,15 @@ public class Camera {
         height - (worldY * height / VIEWPORT_HEIGHT));
   }
   
+  public Point viewToWorld(Point viewCoords) {
+    return viewToWorld(viewCoords.x, viewCoords.y);
+  }
+  
+  public Point viewToWorld(float viewX, float viewY) {
+    return new Point(viewX * viewportWidth / width + getMinX(),
+        (height - viewY) * VIEWPORT_HEIGHT / height);
+  }
+  
   public float viewScaleFactor() {
     return width / viewportWidth;
   }

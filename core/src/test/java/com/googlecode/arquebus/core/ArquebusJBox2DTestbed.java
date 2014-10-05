@@ -19,9 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 /**
- * The entry point for the testbed application
- * 
- * @author Daniel Murphy
+ * The entry point for the testbed application.
  */
 public class ArquebusJBox2DTestbed {
   private static final Logger log = LoggerFactory.getLogger(ArquebusJBox2DTestbed.class);

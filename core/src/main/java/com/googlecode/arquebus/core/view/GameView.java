@@ -9,6 +9,7 @@ import com.googlecode.arquebus.core.model.VehicleModel;
 import playn.core.Canvas;
 import playn.core.Graphics;
 import playn.core.Surface;
+import pythagoras.f.Point;
 
 import java.util.Iterator;
 import java.util.List;
@@ -73,30 +74,42 @@ public class GameView {
   private final Camera camera;
   private final VehicleModel vehicle;
   private final Background background;
+  private final Point pointerViewPosition;
   
   private boolean isDirty = true;
   private final List<Layer<?>> layers = Lists.newLinkedList();
   private final TreeMap<Integer, Item<?>> renderables = Maps.newTreeMap();
   
-  // TODO: enemies, artillery, etc
+  // TODO: enemies, etc
   
   public GameView(GameModel model, Level level, Graphics g) {
     this.g = g;
     this.camera = new Camera(g.width(), g.height());
     this.vehicle = model.getVehicle();
     this.background = new Background(level);
+    pointerViewPosition = new Point(g.width(), 0); // init pointer to upper-right corner
+    
     addCanvasRenderable(new GroundView(model.getGround()));
     addCanvasRenderable(new VehicleView(model.getVehicle()));
+    addCanvasRenderable(new ArtilleryView(model));
   }
   
-  public void addCanvasRenderable(Renderable<Canvas> c) {
+  void addCanvasRenderable(Renderable<Canvas> c) {
     addItem(Item.canvasItem(c));
   }
   
-  public void addSurfaceRenderable(Renderable<Surface> s) {
+  void addSurfaceRenderable(Renderable<Surface> s) {
     addItem(Item.surfaceItem(s));
   }
   
+  public void setPointerViewPosition(float x, float y) {
+    pointerViewPosition.set(x, y);
+  }
+
+  public Point getPointerWorldPosition() {
+    return camera.viewToWorld(pointerViewPosition);
+  }
+
   private <R> void addItem(Item<R> item) {
     int zIndex = item.getItem().getZindex();
     renderables.put(zIndex, item);
@@ -121,7 +134,7 @@ public class GameView {
     }
   }
   
-  public void createLayers() {
+  private void createLayers() {
     g.rootLayer().clear();
     background.addBackground(g.rootLayer());
     layers.clear();
@@ -154,7 +167,7 @@ public class GameView {
     Iterator<Layer<?>> iter = layers.iterator();
     Layer<?> current = null;
     
-    //TODO: fix APIs so we don't need all of these conditionals...
+    //TODO: fix APIs so we don't need all of these conditionals and casts...
     
     for (Item<?> item : renderables.values()) {
       Class<?> type = item.getType();

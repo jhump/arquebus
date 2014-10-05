@@ -47,5 +47,10 @@ public class VehicleView implements Renderable<Canvas> {
         .translate(translate.x, translate.y)
         .scale(scale, scale);
     canvas.setFillColor(Color.rgb(0, 0, 0)).fillCircle(0, 0, 0.6f);
+
+    // show where we are trying to aim
+    translate = camera.worldToView(vehicle.getAimingAt());
+    canvas.restore().save();
+    canvas.setFillColor(Color.rgb(255, 200, 0)).fillCircle(translate.x, translate.y, 5);
   }
 }

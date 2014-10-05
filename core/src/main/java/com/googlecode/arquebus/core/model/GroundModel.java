@@ -81,6 +81,7 @@ public class GroundModel {
     this.heightVariance = level.getGroundHeightVariance();
     this.friction = level.getGroundFriction();
     ground = world.createBody(new BodyDef());
+    ground.setUserData(this);
     init();
   }
   

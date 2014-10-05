@@ -28,7 +28,7 @@ public interface Level {
   float getGroundFriction();
   float getGravity();
   
-  // default vehicle
+  // default vehicle and its weapons
   //TODO
   
   // enemies

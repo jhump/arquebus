@@ -17,6 +17,7 @@ import org.jbox2d.dynamics.joints.WheelJoint;
 import org.jbox2d.dynamics.joints.WheelJointDef;
 
 import playn.core.PlayN;
+import pythagoras.f.Point;
 
 
 public class VehicleModel {
@@ -60,6 +61,8 @@ public class VehicleModel {
     NEUTRAL, ACCELERATE, BRAKE
   }
   
+  private final GameModel game;
+  
   private final Body car;
   private final Body frontWheel;
   private final Body rearWheel;
@@ -82,7 +85,17 @@ public class VehicleModel {
 
   private int ticksWhenVehicleStuck;
   
-  VehicleModel(World world) {
+  private final ArtilleryFactory weapons;
+  private boolean mainFiring;
+  private boolean alternateFiring;
+  
+  private final Point aimingAt = new Point();
+  
+  VehicleModel(GameModel game) {
+    this.game = game;
+    World world = game.getWorld();
+    this.weapons = new ArtilleryFactory(this);
+    
     torque = DEFAULT_TORQUE;
     torqueSplit = DEFAULT_TORQUE_SPLIT;
     brakeTorque = DEFAULT_BRAKE_TORQUE;
@@ -91,6 +104,8 @@ public class VehicleModel {
     reverseSpeed = DEFAULT_REVERSE_SPEED;
     density = DEFAULT_DENSITY;
     
+    // TODO: make creation of bodies and fixtures data-driven and support more than a single vehicle
+    
     BodyDef bd = new BodyDef();
     bd.type = BodyType.DYNAMIC;
     bd.position.set(INITIAL_CAR_POS);
@@ -98,6 +113,7 @@ public class VehicleModel {
     
     car = world.createBody(bd);
     car.createFixture(CAR_BODY, density);
+    car.setUserData(this);
 
     FixtureDef fd = new FixtureDef();
     fd.shape = WHEEL_SHAPE;
@@ -108,10 +124,12 @@ public class VehicleModel {
     bd.angularDamping = 0;
     rearWheel = world.createBody(bd);
     rearWheel.createFixture(fd);
+    rearWheel.setUserData(this);
 
     bd.position.set(INITIAL_FRONT_WHEEL_POS);
     frontWheel = world.createBody(bd);
     frontWheel.createFixture(fd);
+    frontWheel.setUserData(this);
 
     WheelJointDef jd = new WheelJointDef();
     Vec2 axis = new Vec2(0.0f, 1.3f);
@@ -228,8 +246,38 @@ public class VehicleModel {
       brake = 0;
       applyThrottle();
     }
+    
+    if (mainFiring) {
+      ArtilleryModel a = weapons.tryFireMain();
+      if (a != null) {
+        game.addArtillery(a);
+      }
+    }
+
+    if (alternateFiring) {
+      ArtilleryModel a = weapons.tryFireAlternate();
+      if (a != null) {
+        game.addArtillery(a);
+      }
+    }
   }
   
+  public void setMainFiring(boolean firing) {
+    this.mainFiring = firing;
+  }
+
+  public void setAlternateFiring(boolean firing) {
+    this.alternateFiring = firing;
+  }
+  
+  public void setAimingAt(Point p) {
+    aimingAt.set(p);
+  }
+  
+  public Point getAimingAt() {
+    return new Point(aimingAt);
+  }
+
   public void setThrottle(float throttle) {
     this.throttle = throttle;
     
