@@ -7,8 +7,12 @@ import com.googlecode.arquebus.core.model.ArtilleryModel.Missile;
 import com.googlecode.arquebus.core.model.GameModel;
 
 import playn.core.Canvas;
+import playn.core.Color;
+import pythagoras.f.Point;
 
 import java.util.Map;
+
+import org.jbox2d.common.Vec2;
 
 
 public class ArtilleryView implements Renderable<Canvas> {
@@ -72,9 +76,15 @@ public class ArtilleryView implements Renderable<Canvas> {
   private static class BulletRenderer implements Renderer<Bullet> {
     @Override
     public void render(Bullet b, Canvas canvas, Camera camera) {
-       
-      // TODO Auto-generated method stub
-      
+       Vec2 originVec = b.getPosition();
+       Vec2 endVec = b.getTarget();
+       Point origin = camera.worldToView(new Point(originVec.x, originVec.y));
+       Point end = camera.worldToView(new Point(endVec.x, endVec.y));
+       canvas.setStrokeWidth(1)
+             .setStrokeColor(Color.argb(80, 255, 255, 255))
+             .drawLine(origin.x, origin.y, end.x, end.y);
+       canvas.setFillColor(Color.argb(40, 255, 224, 100))
+             .fillCircle(origin.x, origin.y, 20);
     }
   }
 
@@ -82,7 +92,6 @@ public class ArtilleryView implements Renderable<Canvas> {
     @Override
     public void render(Missile m, Canvas canvas, Camera camera) {
       // TODO Auto-generated method stub
-        
     }
   }
 }

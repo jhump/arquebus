@@ -22,7 +22,7 @@ import java.util.List;
 public abstract class ArtilleryModel {
   
   public static class WeaponDef {
-    
+     // TODO ...
   }
   
   private static Damageable NO_OP = new Damageable() {
@@ -120,11 +120,11 @@ public abstract class ArtilleryModel {
     }
 
     @Override
-    protected Vec2 getPosition() {
+    public Vec2 getPosition() {
       return lastPos;
     }
     
-    Vec2 getTarget() {
+    public Vec2 getTarget() {
       return target;
     }
 
