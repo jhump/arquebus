@@ -147,7 +147,7 @@ public class GameView {
         } else if (item.getType() == Surface.class) {
           layers.add(Layer.surfaceLayer(Layers.addSurface(g).save()));
         } else {
-          // WTF!?
+           throw new IllegalStateException("Unrecognized layer type: " + item.getType());
         }
       }
       lastType = type;
@@ -174,7 +174,9 @@ public class GameView {
       if (item.getType() != lastType || current == null) {
         current = iter.next();
         if (type != current.getType()) {
-          // oh fuck...
+          // ruh roh!
+           throw new IllegalStateException(
+                 "Incorrect layer type. Got " + current.getType() + ", expecting " + type);
         }
         if (type == Canvas.class) {
           Canvas canvas = (Canvas) current.getLayer();
@@ -183,7 +185,7 @@ public class GameView {
           Surface surface = (Surface) current.getLayer();
           surface.restore().save().clear();
         } else {
-          // WTF!?
+           throw new IllegalStateException("Unrecognized layer type: " + item.getType());
         }
       }
       if (type == Canvas.class) {

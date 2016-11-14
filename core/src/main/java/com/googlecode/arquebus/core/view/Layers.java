@@ -7,7 +7,6 @@ import playn.core.GroupLayer;
 import playn.core.Surface;
 import playn.core.SurfaceImage;
 
-
 public final class Layers {
   private Layers() {
   }

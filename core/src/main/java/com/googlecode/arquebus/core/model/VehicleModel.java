@@ -20,7 +20,7 @@ import playn.core.PlayN;
 import pythagoras.f.Point;
 
 
-public class VehicleModel {
+public class VehicleModel implements Damageable {
   private static final Vec2 CAR_BODY_VERTICES[] = new Vec2[] {
     new Vec2(-1.6f, -0.2f),
     new Vec2(1.6f, -0.2f),
@@ -56,6 +56,8 @@ public class VehicleModel {
   private static final float DEFAULT_DENSITY = 5;
   
   private static final int TICKS_UNTIL_AUTORESET = 500;
+  
+  private static final float DAMAGE_CAPACITY = 1000;
 
   public enum ThrottleDisposition {
     NEUTRAL, ACCELERATE, BRAKE
@@ -89,7 +91,8 @@ public class VehicleModel {
   private boolean mainFiring;
   private boolean alternateFiring;
   
-  private final Point aimingAt = new Point();
+  private final Vec2 aimingAt = new Vec2();
+  private float damageCapacity = DAMAGE_CAPACITY;
   
   VehicleModel(GameModel game) {
     this.game = game;
@@ -271,11 +274,15 @@ public class VehicleModel {
   }
   
   public void setAimingAt(Point p) {
-    aimingAt.set(p);
+     aimingAt.set(p.x, p.y);
   }
   
-  public Point getAimingAt() {
-    return new Point(aimingAt);
+  public Point getAimingAtPoint() {
+     return new Point(aimingAt.x, aimingAt.y);
+  }
+  
+  public Vec2 getAimingAtVec() {
+    return new Vec2(aimingAt);
   }
 
   public void setThrottle(float throttle) {
@@ -364,5 +371,19 @@ public class VehicleModel {
   public ThrottleDisposition getThrottleDisposition() {
     if (brake != 0) return ThrottleDisposition.BRAKE;
     return throttle == 0 ? ThrottleDisposition.NEUTRAL : ThrottleDisposition.ACCELERATE;
+  }
+
+  @Override
+  public void applyDamage(float amount) {
+     damageCapacity -= amount;
+     if (damageCapacity <= 0) {
+        damageCapacity = DAMAGE_CAPACITY;
+        reset();
+     }
+  }
+
+  @Override
+  public float damageCapacity() {
+     return damageCapacity;
   }
 }

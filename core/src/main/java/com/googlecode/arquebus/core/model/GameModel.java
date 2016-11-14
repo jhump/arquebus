@@ -1,5 +1,6 @@
 package com.googlecode.arquebus.core.model;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.googlecode.arquebus.core.Level;
 import com.googlecode.arquebus.core.jbox2d.ContactListeners;
@@ -17,6 +18,7 @@ public class GameModel {
   private final VehicleModel vehicle;
   private final GroundModel ground;
   private final HashSet<ArtilleryModel> artillery = Sets.newHashSet();
+  private final HashSet<ArtilleryModel> destroyedArtillery = Sets.newHashSet();
   
   public GameModel(Level level) {
     this(new World(new Vec2(0, -level.getGravity())), level);
@@ -43,7 +45,7 @@ public class GameModel {
   }
   
   public Iterable<ArtilleryModel> getArtillery() {
-    return Collections.unmodifiableCollection(artillery);
+    return Iterables.concat(artillery, destroyedArtillery);
   }
   
   public void addArtillery(ArtilleryModel a) {
@@ -51,6 +53,7 @@ public class GameModel {
   }
   
   public void update(int delta) {
+    destroyedArtillery.clear();
     vehicle.update();
     float timeStep = delta / 1000.0f;
     world.step(timeStep, 6, 2);
@@ -58,6 +61,7 @@ public class GameModel {
       ArtilleryModel a = iter.next();
       if (!a.update(delta)) {
         iter.remove();
+        destroyedArtillery.add(a);
       }
     }
   }
