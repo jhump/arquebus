@@ -4,35 +4,35 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.googlecode.arquebus</groupId>
+    <groupId>com.bluegosling.arquebus</groupId>
     <artifactId>arquebus</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>arquebus-java</artifactId>
   <packaging>jar</packaging>
-  <name>ArquebusMain Java</name>
+  <name>Arquebus Java</name>
 
   <properties>
-    <mainClass>com.googlecode.arquebus.java.ArquebusMainJava</mainClass>
+    <mainClass>com.bluegosling.arquebus.java.ArquebusJava</mainClass>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.googlecode.arquebus</groupId>
+      <groupId>com.bluegosling.arquebus</groupId>
       <artifactId>arquebus-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.googlecode.arquebus</groupId>
+      <groupId>com.bluegosling.arquebus</groupId>
       <artifactId>arquebus-assets</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.googlecode.playn</groupId>
-      <artifactId>playn-java</artifactId>
+      <groupId>io.playn</groupId>
+      <artifactId>playn-java-lwjgl</artifactId>
       <version>${playn.version}</version>
     </dependency>
   </dependencies>
@@ -73,20 +73,28 @@
         <plugins>
           <!-- allows testing of Java backend via: mvn test -Pjava -->
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.2.1</version>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
             <executions>
               <execution>
                 <phase>test</phase>
+                <configuration>
+                  <target>
+                    <!-- these shenanigans are needed to pass -XstartOnFirstThread on Mac OS
+                         but not on other OSes where they would cause the JVM to fail, yay -->
+                    <condition property="jvmarg" value="-XstartOnFirstThread" else="-Dfoo=bar">
+                      <os family="mac"/>
+                    </condition>
+                    <java fork="true" classname="${mainClass}" classpathref="maven.test.classpath">
+                      <jvmarg value="${jvmarg}"/>
+                    </java>
+                  </target>
+                </configuration>
                 <goals>
-                  <goal>java</goal>
+                  <goal>run</goal>
                 </goals>
               </execution>
             </executions>
-            <configuration>
-              <mainClass>${mainClass}</mainClass>
-            </configuration>
           </plugin>
         </plugins>
       </build>
